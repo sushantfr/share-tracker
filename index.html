@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Analysis Dashboard - Professional Investment Analytics</title>
+    <meta name="description" content="Advanced stock price analysis and forecasting dashboard for professional investors">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 28L10 16L16 22L22 10L28 18" stroke="url(#gradient)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            <defs>
+                                <linearGradient id="gradient" x1="4" y1="28" x2="28" y2="10" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#3B82F6"/>
+                                    <stop offset="1" stop-color="#8B5CF6"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h1>StockVision</h1>
+                        <p class="tagline">Professional Analytics</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <div class="market-status">
+                        <span class="status-indicator"></span>
+                        <span class="status-text">Market Open</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Search Section -->
+            <section class="search-section">
+                <div class="search-container">
+                    <div class="search-header">
+                        <h2>Stock Analysis</h2>
+                        <p>Enter a stock symbol to analyze price trends and forecast future movements</p>
+                    </div>
+                    <div class="search-input-group">
+                        <input 
+                            type="text" 
+                            id="stockSymbol" 
+                            class="search-input" 
+                            placeholder="Enter stock symbol (e.g., TATASTEEL.NS, RELIANCE.NS)"
+                            value="TATASTEEL.NS"
+                        >
+                        <button id="analyzeBtn" class="analyze-btn">
+                            <span class="btn-text">Analyze</span>
+                            <svg class="btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M4 10H16M16 10L12 6M16 10L12 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="popular-stocks">
+                        <span class="label">Popular:</span>
+                        <button class="stock-chip" data-symbol="TATASTEEL.NS">TATA STEEL</button>
+                        <button class="stock-chip" data-symbol="RELIANCE.NS">RELIANCE</button>
+                        <button class="stock-chip" data-symbol="TCS.NS">TCS</button>
+                        <button class="stock-chip" data-symbol="INFY.NS">INFOSYS</button>
+                        <button class="stock-chip" data-symbol="HDFCBANK.NS">HDFC BANK</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="loading-state hidden">
+                <div class="loading-spinner"></div>
+                <p>Analyzing stock data and generating forecast...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" class="error-state hidden">
+                <div class="error-icon">⚠️</div>
+                <h3>Unable to fetch data</h3>
+                <p id="errorMessage">Please check the stock symbol and try again</p>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="results-section hidden">
+                <!-- Stock Info Card -->
+                <div class="stock-info-card">
+                    <div class="stock-header">
+                        <div class="stock-title">
+                            <h2 id="stockName">-</h2>
+                            <span id="stockSymbolDisplay" class="symbol-badge">-</span>
+                        </div>
+                        <div class="stock-price">
+                            <div class="current-price" id="currentPrice">₹0.00</div>
+                            <div class="price-change" id="priceChange">
+                                <span class="change-value">+0.00</span>
+                                <span class="change-percent">(+0.00%)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stock-metrics">
+                        <div class="metric">
+                            <span class="metric-label">52W High</span>
+                            <span class="metric-value" id="high52w">₹0.00</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">52W Low</span>
+                            <span class="metric-value" id="low52w">₹0.00</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Avg Volume</span>
+                            <span class="metric-value" id="avgVolume">0</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-label">Data Period</span>
+                            <span class="metric-value">1 Year</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart Section -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3>Price Analysis & Forecast</h3>
+                        <div class="chart-controls">
+                            <button class="chart-control-btn active" data-view="all">All Data</button>
+                            <button class="chart-control-btn" data-view="recent">Last 3 Months</button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="priceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Forecast Insights -->
+                <div class="insights-grid">
+                    <div class="insight-card">
+                        <div class="insight-icon trend-icon">📈</div>
+                        <div class="insight-content">
+                            <h4>Forecast Trend</h4>
+                            <p id="forecastTrend" class="insight-value">Analyzing...</p>
+                            <p class="insight-description">Based on ARIMA model prediction</p>
+                        </div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-icon target-icon">🎯</div>
+                        <div class="insight-content">
+                            <h4>10-Day Target</h4>
+                            <p id="targetPrice" class="insight-value">₹0.00</p>
+                            <p class="insight-description">Predicted price in 10 trading days</p>
+                        </div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-icon confidence-icon">📊</div>
+                        <div class="insight-content">
+                            <h4>Confidence Range</h4>
+                            <p id="confidenceRange" class="insight-value">±0.00</p>
+                            <p class="insight-description">95% confidence interval</p>
+                        </div>
+                    </div>
+                    <div class="insight-card">
+                        <div class="insight-icon volatility-icon">⚡</div>
+                        <div class="insight-content">
+                            <h4>Volatility</h4>
+                            <p id="volatility" class="insight-value">0.00%</p>
+                            <p class="insight-description">Standard deviation of returns</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Disclaimer -->
+                <div class="disclaimer">
+                    <strong>Disclaimer:</strong> This analysis is for educational purposes only. Stock market investments are subject to market risks. 
+                    Past performance is not indicative of future results. Please consult with a financial advisor before making investment decisions.
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
