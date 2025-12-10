@@ -1,0 +1,8 @@
+{
+    "rewrites": [
+        {
+            "source": "/api/stock/:symbol",
+            "destination": "/api/stock"
+        }
+    ]
+}
