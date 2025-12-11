@@ -31,8 +31,5 @@
             "src": "/(.*)",
             "dest": "/index.html"
         }
-    ],
-    "env": {
-        "NEWS_API_KEY": "@news_api_key"
-    }
+    ]
 }
