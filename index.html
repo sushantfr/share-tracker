@@ -55,6 +55,12 @@
             <button class="nav-tab active" id="analysisTab" onclick="switchTab('analysis')">
                 📊 Stock Analysis
             </button>
+            <button class="nav-tab" id="todayTab" onclick="switchTab('today')">
+                💰 Today's Prices
+            </button>
+            <button class="nav-tab" id="predictionsTab" onclick="switchTab('predictions')">
+                🔮 Future Predictions
+            </button>
             <button class="nav-tab" id="marketTab" onclick="switchTab('market')">
                 🌐 Market Overview
             </button>
@@ -208,6 +214,102 @@
                         before making investment decisions.
                     </div>
                 </div>
+            </div>
+
+            <!-- Today's Prices Tab Content -->
+            <div id="todayContent" class="tab-content">
+                <section class="today-prices-section">
+                    <div class="section-header">
+                        <h2>💰 Today's Stock Prices</h2>
+                        <p>Real-time current prices for all tracked stocks</p>
+                        <button class="refresh-btn" onclick="loadTodayPrices()">🔄 Refresh</button>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div id="todayStats" class="market-stats-grid"></div>
+
+                    <!-- Today's Stock List -->
+                    <div class="stock-list-container">
+                        <div class="stock-list-header">
+                            <div class="header-cell">Symbol</div>
+                            <div class="header-cell">Name</div>
+                            <div class="header-cell">Current Price</div>
+                            <div class="header-cell">Change</div>
+                            <div class="header-cell">Volume</div>
+                        </div>
+                        <div id="todayStockList" class="stock-list"></div>
+                    </div>
+
+                    <div id="todayLoading" class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p>Loading today's prices...</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Future Predictions Tab Content -->
+            <div id="predictionsContent" class="tab-content">
+                <section class="predictions-section">
+                    <div class="section-header">
+                        <h2>🔮 Future Price Predictions</h2>
+                        <p>AI-powered 10-day price forecasts for all stocks</p>
+                    </div>
+
+                    <!-- Prediction Controls -->
+                    <div class="prediction-controls">
+                        <select id="predictionStock" class="prediction-select">
+                            <option value="">Select a stock to predict...</option>
+                        </select>
+                        <button class="analyze-btn" onclick="loadPrediction()">Generate Prediction</button>
+                    </div>
+
+                    <!-- Prediction Results -->
+                    <div id="predictionResults" class="hidden">
+                        <div class="prediction-card">
+                            <h3>Prediction for <span id="predSymbol"></span></h3>
+                            <div class="prediction-summary">
+                                <div class="pred-metric">
+                                    <span class="pred-label">Current Price</span>
+                                    <span class="pred-value" id="predCurrent">₹0.00</span>
+                                </div>
+                                <div class="pred-metric">
+                                    <span class="pred-label">Predicted (10 days)</span>
+                                    <span class="pred-value" id="predTarget">₹0.00</span>
+                                </div>
+                                <div class="pred-metric">
+                                    <span class="pred-label">Expected Change</span>
+                                    <span class="pred-value" id="predChange">+0.00%</span>
+                                </div>
+                            </div>
+
+                            <!-- Prediction Chart -->
+                            <div class="chart-wrapper" style="height: 300px;">
+                                <canvas id="predictionChart"></canvas>
+                            </div>
+
+                            <!-- Prediction Table -->
+                            <div class="prediction-table">
+                                <h4>Daily Predictions</h4>
+                                <table id="predictionTableData">
+                                    <thead>
+                                        <tr>
+                                            <th>Day</th>
+                                            <th>Predicted Price</th>
+                                            <th>Lower Bound</th>
+                                            <th>Upper Bound</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="predictionTableBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="predictionLoading" class="loading-state hidden">
+                        <div class="loading-spinner"></div>
+                        <p>Generating prediction...</p>
+                    </div>
+                </section>
             </div>
 
             <!-- Market Overview Tab Content -->
