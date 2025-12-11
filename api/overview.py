@@ -18,9 +18,6 @@ NIFTY_50 = [
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        parsed_path = urlparse(self.path)
-        path = parsed_path.path
-        
         # Enable CORS
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
@@ -30,11 +27,7 @@ class handler(BaseHTTPRequestHandler):
         self.end_headers()
         
         try:
-            if path == '/api/market/overview':
-                response = self.get_market_overview()
-            else:
-                response = {'error': 'Endpoint not found'}
-            
+            response = self.get_market_overview()
             self.wfile.write(json.dumps(response).encode())
         except Exception as e:
             error_response = {'error': str(e)}

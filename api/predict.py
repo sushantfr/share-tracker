@@ -8,7 +8,6 @@ import numpy as np
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         parsed_path = urlparse(self.path)
-        path_parts = parsed_path.path.split('/')
         
         # Enable CORS
         self.send_response(200)
@@ -20,8 +19,16 @@ class handler(BaseHTTPRequestHandler):
         
         try:
             # Extract symbol from path: /api/predict/SYMBOL
-            if len(path_parts) >= 4 and path_parts[2] == 'predict':
-                symbol = path_parts[3]
+            path_parts = parsed_path.path.split('/')
+            symbol = None
+            
+            # Try to get symbol from path
+            for i, part in enumerate(path_parts):
+                if part == 'predict' and i + 1 < len(path_parts):
+                    symbol = path_parts[i + 1]
+                    break
+            
+            if symbol:
                 response = self.get_prediction(symbol)
             else:
                 response = {'error': 'Symbol not provided'}
