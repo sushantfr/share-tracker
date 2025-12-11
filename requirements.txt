@@ -1,3 +1,9 @@
+flask
+flask-cors
+flask-socketio
 yfinance
-Flask
-Flask-CORS
+textblob
+numpy
+requests
+python-socketio
+eventlet

@@ -13,6 +13,8 @@ const CONFIG = {
 // ===== State Management =====
 let currentChart = null;
 let stockData = null;
+let socket = null;
+let currentSymbol = null;
 
 // ===== DOM Elements =====
 const elements = {
@@ -71,6 +73,7 @@ async function analyzeStock() {
     }
 
     showLoading();
+    currentSymbol = symbol;
 
     try {
         // Fetch stock data
@@ -80,12 +83,25 @@ async function analyzeStock() {
         // Calculate metrics
         const metrics = calculateMetrics(data);
 
-        // Perform ARIMA forecast
-        const forecast = performARIMAForecast(data.prices);
+        // Fetch AI-powered prediction with news sentiment
+        let forecast;
+        try {
+            const predictionData = await fetchAIPrediction(symbol);
+            forecast = predictionData.prediction;
+
+            // Update insights with AI prediction
+            updateInsightsWithAI(forecast, metrics, predictionData.currentPrice);
+        } catch (error) {
+            console.log('Using fallback ARIMA prediction');
+            forecast = performARIMAForecast(data.prices);
+            updateInsights(forecast, metrics);
+        }
+
+        // Fetch and display news
+        fetchAndDisplayNews(symbol);
 
         // Update UI
         updateStockInfo(symbol, data, metrics);
-        updateInsights(forecast, metrics);
         renderChart(data, forecast);
 
         showResults();
@@ -523,9 +539,115 @@ function addBusinessDays(date, days) {
     return result;
 }
 
+// ===== WebSocket Connection =====
+function initializeWebSocket() {
+    if (typeof io === 'undefined') {
+        console.log('Socket.IO not loaded, real-time updates disabled');
+        return;
+    }
+
+    socket = io();
+
+    socket.on('connect', () => {
+        console.log('WebSocket connected');
+        updateMarketStatus('Live', true);
+    });
+
+    socket.on('disconnect', () => {
+        console.log('WebSocket disconnected');
+        updateMarketStatus('Disconnected', false);
+    });
+
+    socket.on('connection_status', (data) => {
+        console.log('Connection status:', data);
+    });
+
+    socket.on('market_update', (data) => {
+        console.log('Market update received:', data);
+        // Update market stats if on market overview tab
+        if (document.getElementById('marketContent').classList.contains('active')) {
+            updateMarketStatsRealtime(data);
+        }
+    });
+}
+
+function updateMarketStatus(text, isConnected) {
+    const statusText = document.getElementById('marketStatusText');
+    if (statusText) {
+        statusText.textContent = text;
+        statusText.style.color = isConnected ? 'var(--accent-green)' : 'var(--accent-red)';
+    }
+}
+
+function updateMarketStatsRealtime(data) {
+    // Update top gainers/losers in real-time
+    if (data.topGainers && marketOverview) {
+        marketOverview.renderTopMovers(data.topGainers, data.topLosers);
+    }
+}
+
+// ===== AI Prediction with News =====
+async function fetchAIPrediction(symbol) {
+    const response = await fetch(`/api/stock/${symbol}/predict`);
+    if (!response.ok) throw new Error('Prediction failed');
+    return await response.json();
+}
+
+async function fetchAndDisplayNews(symbol) {
+    try {
+        await newsManager.fetchStockNews(symbol);
+        newsManager.showNewsPanel();
+    } catch (error) {
+        console.error('Failed to fetch news:', error);
+    }
+}
+
+function updateInsightsWithAI(forecast, metrics, currentPrice) {
+    const currencySymbol = stockData.currency === 'INR' ? '₹' : '$';
+    const targetValue = forecast.values[forecast.values.length - 1];
+    const change = targetValue - currentPrice;
+    const changePercent = (change / currentPrice) * 100;
+
+    // Forecast trend with sentiment
+    const sentiment = forecast.sentiment;
+    let trendText = changePercent > 2 ? '📈 Bullish Trend' :
+        changePercent < -2 ? '📉 Bearish Trend' :
+            '➡️ Neutral Trend';
+
+    if (sentiment) {
+        trendText += ` (${sentiment.label} News)`;
+    }
+
+    elements.forecastTrend.textContent = trendText;
+    elements.forecastTrend.style.color = changePercent > 0 ? 'var(--accent-green)' :
+        changePercent < 0 ? 'var(--accent-red)' :
+            'var(--text-secondary)';
+
+    // Target price
+    elements.targetPrice.textContent = `${currencySymbol}${targetValue.toFixed(2)}`;
+    elements.targetPrice.style.color = changePercent > 0 ? 'var(--accent-green)' :
+        changePercent < 0 ? 'var(--accent-red)' :
+            'var(--text-primary)';
+
+    // Confidence range
+    const lastCI = forecast.confidenceIntervals[forecast.confidenceIntervals.length - 1];
+    const range = (lastCI.upper - lastCI.lower) / 2;
+    elements.confidenceRange.textContent = `±${currencySymbol}${range.toFixed(2)}`;
+
+    // Volatility
+    elements.volatility.textContent = `${metrics.volatility.toFixed(2)}%`;
+    elements.volatility.style.color = metrics.volatility > 30 ? 'var(--accent-red)' :
+        metrics.volatility > 20 ? 'var(--accent-yellow)' :
+            'var(--accent-green)';
+}
+
 // ===== Initialize =====
 // Auto-analyze default stock on load
 window.addEventListener('load', () => {
+    // Initialize WebSocket
+    initializeWebSocket();
+
+    // Auto-analyze default stock
     setTimeout(() => {
         analyzeStock();
     }, 500);

@@ -1,176 +1,154 @@
-# Stock Analysis Dashboard
+# Real-Time Stock Tracker with AI Predictions
 
-A professional stock price analysis dashboard with ARIMA forecasting and real-time data from Yahoo Finance.
+A professional real-time stock tracking platform with AI-powered predictions, news sentiment analysis, and market overview for 60+ NSE stocks.
 
-![Dashboard Preview](https://via.placeholder.com/800x400/0a0e1a/3B82F6?text=Stock+Analysis+Dashboard)
+## 🚀 Quick Start
 
-## Features
+### 1. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
 
-- 📊 **Real-time stock data** from Yahoo Finance
-- 📈 **ARIMA forecasting** (10-day ahead prediction)
-- 💎 **Premium dark UI** with glassmorphism effects
-- 📱 **Responsive design** for all devices
-- ⚡ **Interactive charts** with Chart.js
-- 🎯 **Key metrics**: Price, Volume, Volatility, 52W High/Low
-- 🔮 **Forecast insights** with confidence intervals
+### 2. Start Server
+```bash
+python server.py
+```
 
-## Quick Start
+### 3. Open Browser
+Navigate to: **http://localhost:5000**
 
-### Prerequisites
+## ✨ Features
 
-- Python 3.7+
-- pip or conda
+### 📊 Stock Analysis
+- Real-time stock data from Yahoo Finance
+- AI-powered 10-day price predictions
+- News sentiment analysis integration
+- Interactive price charts with confidence intervals
+- Key metrics: 52W High/Low, Volume, Volatility
 
-### Installation
+### 🌐 Market Overview
+- View 60+ NSE stocks in real-time
+- Market statistics (Gainers, Losers, Avg Change)
+- Top gainers/losers cards
+- Filter by sector (Banking, IT, Auto, Pharma, etc.)
+- Search and sort functionality
 
-1. **Clone or navigate to the project directory**:
-   ```bash
-   cd "c:\Users\91938\Desktop\Shares tracker"
-   ```
+### 📰 News & Sentiment
+- Stock-specific news fetching
+- Sentiment analysis (Positive/Negative/Neutral)
+- Overall sentiment score with confidence
+- News impact on price predictions
 
-2. **Install dependencies**:
-   ```bash
-   conda install -y flask flask-cors
-   pip install yfinance
-   ```
+### ⚡ Real-Time Updates
+- WebSocket connection for live data
+- Market stats update every 30 seconds
+- Connection status indicator
 
-3. **Start the server**:
-   ```bash
-   python server.py
-   ```
+## 🎯 How to Use
 
-4. **Open your browser**:
-   Navigate to `http://localhost:5000`
+### Analyze a Stock
+1. Enter stock symbol (e.g., `TATASTEEL.NS`, `RELIANCE.NS`)
+2. Click **Analyze** button
+3. View AI predictions, news, and charts
 
-## Usage
+### View Market Overview
+1. Click **Market Overview** tab
+2. Browse all tracked stocks
+3. Filter by sector or search
+4. Click any stock to analyze
 
-### Analyzing Stocks
+## 🔧 Configuration
 
-1. **Default Stock**: TATASTEEL.NS loads automatically
-2. **Search**: Enter any NSE stock symbol (e.g., `RELIANCE.NS`, `TCS.NS`, `INFY.NS`)
-3. **Quick Access**: Click popular stock chips for instant analysis
-4. **View Forecast**: Scroll down to see 10-day price prediction with confidence intervals
+### Optional: Add News API Key
+1. Sign up at https://newsapi.org (free tier)
+2. Create `.env` file:
+```env
+NEWS_API_KEY=your_api_key_here
+```
+3. Restart server
 
-### Supported Stock Symbols
+Without API key, mock news data is used.
 
-Use NSE symbols with `.NS` suffix:
-- `TATASTEEL.NS` - Tata Steel
-- `RELIANCE.NS` - Reliance Industries
-- `TCS.NS` - Tata Consultancy Services
-- `INFY.NS` - Infosys
-- `HDFCBANK.NS` - HDFC Bank
-- And any other NSE-listed stock
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 Shares tracker/
-├── index.html      # Main HTML structure
-├── styles.css      # Premium dark theme styling
-├── app.js          # Frontend JavaScript with ARIMA
-├── server.py       # Flask backend API
-└── README.md       # This file
+├── backend/              # Backend services
+│   ├── config.py         # Configuration & stock lists
+│   ├── database.py       # SQLite caching
+│   ├── news_service.py   # News & sentiment
+│   ├── market_service.py # Market overview
+│   └── prediction_service.py # AI predictions
+├── server.py             # Flask server with WebSocket
+├── index.html            # UI with tabs
+├── app.js                # Main app logic
+├── market.js             # Market overview
+├── news.js               # News display
+├── styles.css            # Styling
+└── requirements.txt      # Dependencies
 ```
 
-## Technical Details
+## 🛠️ Tech Stack
 
-### ARIMA Model
-- **Order**: AR(5,1,0)
-- **Forecast Horizon**: 10 trading days
-- **Confidence Interval**: 95%
+**Backend:**
+- Flask + Flask-SocketIO (WebSocket)
+- yfinance (Stock data)
+- TextBlob (Sentiment analysis)
+- SQLite (Caching)
 
-### Tech Stack
-- **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **Charts**: Chart.js 4.4.0
-- **Backend**: Flask (Python)
-- **Data Source**: Yahoo Finance (via yfinance)
-- **Fonts**: Inter, JetBrains Mono (Google Fonts)
+**Frontend:**
+- Vanilla JavaScript
+- Chart.js (Charts)
+- Socket.IO (Real-time)
+- Premium dark theme UI
 
-### API Endpoints
+## 📈 Tracked Stocks
 
-- `GET /` - Serves the main dashboard
-- `GET /api/stock/<symbol>` - Returns stock data in JSON format
+- **Nifty 50**: All top 50 NSE stocks
+- **Popular**: Additional high-volume stocks
+- **Total**: 60 stocks
 
-## Features in Detail
+Edit `backend/config.py` to add more stocks.
 
-### Stock Information Card
-- Current price with real-time change
-- 52-week high and low
-- Average trading volume
-- Data period (1 year)
+## 🎨 Features in Detail
 
-### Interactive Chart
-- Historical prices (blue line)
-- Forecasted prices (orange dashed line)
-- 95% confidence interval (shaded area)
-- Hover tooltips with detailed information
+### AI Predictions
+- Combines ARIMA forecasting (70%) + News sentiment (30%)
+- 10-day ahead predictions
+- 95% confidence intervals
+- Sentiment-adjusted forecasts
 
-### Forecast Insights
-1. **Trend Analysis**: Bullish/Bearish/Neutral indicator
-2. **Target Price**: 10-day ahead prediction
-3. **Confidence Range**: ± range for uncertainty
-4. **Volatility**: Annualized standard deviation
+### Market Overview
+- Parallel fetching for fast loading
+- Real-time price updates
+- Sector categorization
+- Sortable by price, change%, volume
 
-## Customization
+### News Integration
+- Recent news for each stock
+- Sentiment scoring (-1 to +1)
+- Confidence percentage
+- Color-coded badges
 
-### Changing Forecast Period
+## 🚀 Deployment
 
-Edit `app.js`:
-```javascript
-const CONFIG = {
-    FORECAST_DAYS: 10,  // Change this value
-    // ...
-};
-```
+Ready to deploy to:
+- **Vercel** (Recommended for serverless)
+- **Render/Railway** (Free tier available)
+- **Heroku** (Paid)
 
-### Changing ARIMA Parameters
+See `VERCEL_DEPLOY.md` for deployment instructions.
 
-Edit `app.js`:
-```javascript
-const CONFIG = {
-    // ...
-    ARIMA_ORDER: { p: 5, d: 1, q: 0 },  // Modify p, d, q
-};
-```
+## ⚠️ Disclaimer
 
-### Styling
+This application is for **educational purposes only**. Stock market investments are subject to market risks. Past performance is not indicative of future results. Please consult with a financial advisor before making investment decisions.
 
-Edit `styles.css` to customize:
-- Colors (CSS variables at top of file)
-- Fonts
-- Spacing
-- Border radius
-- Animations
+## 📝 License
 
-## Troubleshooting
-
-### Server won't start
-- Ensure Flask is installed: `pip install flask flask-cors`
-- Check if port 5000 is available
-- Try running with: `python server.py`
-
-### No data loading
-- Check internet connection (needs access to Yahoo Finance)
-- Verify stock symbol is correct (use `.NS` for NSE stocks)
-- Check browser console for errors
-
-### Chart not displaying
-- Ensure Chart.js CDN is accessible
-- Check browser console for JavaScript errors
-- Try refreshing the page
-
-## Disclaimer
-
-⚠️ **Important**: This application is for educational purposes only. Stock market investments are subject to market risks. Past performance is not indicative of future results. Please consult with a financial advisor before making investment decisions.
-
-## License
-
-This project is open source and available for educational purposes.
-
-## Author
-
-Created with ❤️ for stock market analysis and learning
+Open source for educational purposes.
 
 ---
 
 **Happy Investing! 📈**
+
+For detailed documentation, see [walkthrough.md](file:///.gemini/antigravity/brain/1b04c885-4e04-4ee0-a487-0aca58bc64b1/walkthrough.md)
