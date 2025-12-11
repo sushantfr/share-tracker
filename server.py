@@ -160,6 +160,35 @@ def search_stocks():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+@app.route('/api/predict/<symbol>')
+def get_prediction(symbol):
+    """Get prediction for Future Predictions tab (matches Vercel API)"""
+    try:
+        # Get historical data
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=365)
+        
+        ticker = yf.Ticker(symbol)
+        data = ticker.history(start=start_date, end=end_date, interval='1d')
+        
+        if data.empty:
+            return jsonify({'error': 'No data available for this symbol'}), 404
+        
+        prices = data['Close'].tolist()
+        current_price = float(data['Close'].iloc[-1])
+        
+        # Get prediction with sentiment
+        prediction = prediction_service.predict_with_sentiment(symbol, prices)
+        
+        return jsonify({
+            'symbol': symbol,
+            'currentPrice': current_price,
+            'prediction': prediction,
+            'timestamp': datetime.now().isoformat()
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 # WebSocket events for real-time updates
 @socketio.on('connect')
 def handle_connect():
